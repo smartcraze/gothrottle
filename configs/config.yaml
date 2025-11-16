@@ -1,0 +1,6 @@
+routes:
+  - path: "/api"
+    target: "http://localhost:8000"
+rate_limit:
+  requests_per_second: 10
+  burst: 50
