@@ -1,0 +1,12 @@
+server:
+  port: 8080
+
+rate_limit:
+  requests_per_second: 2
+  burst: 5
+
+routes:
+  - path: "/api"
+    target: "http://localhost:8001"
+  - path: "/auth"
+    target: "http://localhost:8002"

@@ -1,0 +1,12 @@
+server:
+  port: 8080
+
+rate_limit:
+  requests_per_second: 5
+  burst: 10
+
+routes:
+  - path: "/api"
+    target: "https://backend.com"
+  - path: "/auth"
+    target: "https://auth.service.com"

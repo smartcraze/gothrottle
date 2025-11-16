@@ -2,11 +2,11 @@ server:
   port: 8080
 
 rate_limit:
-  requests_per_second: 5
-  burst: 10
+  requests_per_second: 2
+  burst: 5
 
 routes:
   - path: "/api"
-    target: "https://backend.com"
+    target: "http://localhost:8001"
   - path: "/auth"
-    target: "https://auth.service.com"
+    target: "http://localhost:8002"
