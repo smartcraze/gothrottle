@@ -4,14 +4,15 @@ import (
 	"sync/atomic"
 )
 
-// Balancer handles load balancing across multiple backend servers
-// Currently implements round-robin, extensible for other strategies
+/*
+Balancer handles load balancing across multiple backend servers using
+round-robin strategy. Designed to be extensible for other algorithms.
+*/
 type Balancer struct {
 	counter uint64
 	targets []string
 }
 
-// NewBalancer creates a new load balancer with the given targets
 func NewBalancer(targets []string) *Balancer {
 	return &Balancer{
 		targets: targets,
@@ -19,7 +20,6 @@ func NewBalancer(targets []string) *Balancer {
 	}
 }
 
-// Next returns the next target using round-robin strategy
 func (b *Balancer) Next() string {
 	if len(b.targets) == 0 {
 		return ""
@@ -29,17 +29,14 @@ func (b *Balancer) Next() string {
 		return b.targets[0]
 	}
 
-	// Atomic increment for thread-safe round-robin
 	n := atomic.AddUint64(&b.counter, 1)
 	return b.targets[(n-1)%uint64(len(b.targets))]
 }
 
-// Targets returns all configured targets
 func (b *Balancer) Targets() []string {
 	return b.targets
 }
 
-// Count returns the number of targets
 func (b *Balancer) Count() int {
 	return len(b.targets)
 }

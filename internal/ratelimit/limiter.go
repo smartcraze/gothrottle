@@ -5,16 +5,19 @@ import (
 	"time"
 )
 
-// TokenBucket implements the token bucket algorithm for rate limiting
+/*
+TokenBucket implements the token bucket algorithm for rate limiting.
+Tokens are continuously added at a fixed rate and consumed by incoming requests.
+When tokens are exhausted, requests are rejected until new tokens become available.
+*/
 type TokenBucket struct {
-	mu              sync.Mutex
-	tokens          float64   // Current number of tokens
-	maxTokens       float64   // Maximum tokens (burst capacity)
-	refillRate      float64   // Tokens added per second
-	lastRefillTime  time.Time // Last time tokens were refilled
+	mu             sync.Mutex
+	tokens         float64
+	maxTokens      float64
+	refillRate     float64
+	lastRefillTime time.Time
 }
 
-// NewTokenBucket creates a new token bucket with the specified rate and burst capacity
 func NewTokenBucket(requestsPerSecond int, burst int) *TokenBucket {
 	return &TokenBucket{
 		tokens:         float64(burst),
@@ -24,24 +27,25 @@ func NewTokenBucket(requestsPerSecond int, burst int) *TokenBucket {
 	}
 }
 
-// Allow checks if a request is allowed and consumes a token if available
+/*
+Allow checks if a request is allowed based on token availability.
+It refills tokens based on elapsed time, then attempts to consume one token.
+Returns true if the request is allowed, false if rate limit is exceeded.
+*/
 func (tb *TokenBucket) Allow() bool {
 	tb.mu.Lock()
 	defer tb.mu.Unlock()
 
-	// Refill tokens based on time elapsed
 	now := time.Now()
 	elapsed := now.Sub(tb.lastRefillTime).Seconds()
 	tb.tokens += elapsed * tb.refillRate
 
-	// Cap tokens at maximum
 	if tb.tokens > tb.maxTokens {
 		tb.tokens = tb.maxTokens
 	}
 
 	tb.lastRefillTime = now
 
-	// Check if we have tokens available
 	if tb.tokens >= 1.0 {
 		tb.tokens -= 1.0
 		return true
@@ -50,17 +54,14 @@ func (tb *TokenBucket) Allow() bool {
 	return false
 }
 
-// Tokens returns the current number of tokens (for testing/monitoring)
 func (tb *TokenBucket) Tokens() float64 {
 	tb.mu.Lock()
 	defer tb.mu.Unlock()
 
-	// Refill tokens based on time elapsed
 	now := time.Now()
 	elapsed := now.Sub(tb.lastRefillTime).Seconds()
 	tb.tokens += elapsed * tb.refillRate
 
-	// Cap tokens at maximum
 	if tb.tokens > tb.maxTokens {
 		tb.tokens = tb.maxTokens
 	}
@@ -69,7 +70,6 @@ func (tb *TokenBucket) Tokens() float64 {
 	return tb.tokens
 }
 
-// Reset resets the bucket to full capacity (for testing)
 func (tb *TokenBucket) Reset() {
 	tb.mu.Lock()
 	defer tb.mu.Unlock()
