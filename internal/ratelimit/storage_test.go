@@ -5,10 +5,10 @@ import (
 )
 
 func TestNewStorage(t *testing.T) {
-	storage := NewStorage(10, 50)
+	storage := NewStorage(10.0, 50)
 	
-	if storage.requestsPerSec != 10 {
-		t.Errorf("Expected requestsPerSec 10, got %d", storage.requestsPerSec)
+	if storage.requestsPerSec != 10.0 {
+		t.Errorf("Expected requestsPerSec 10.0, got %f", storage.requestsPerSec)
 	}
 	
 	if storage.burst != 50 {
@@ -20,8 +20,8 @@ func TestNewStorage(t *testing.T) {
 	}
 }
 
-func TestStorageGetBucket(t *testing.T) {
-	storage := NewStorage(10, 50)
+func TestStorage_GetBucket(t *testing.T) {
+	storage := NewStorage(10.0, 50)
 	
 	// Get bucket for client1
 	bucket1 := storage.GetBucket("client1")
@@ -61,8 +61,8 @@ func TestStorageGetBucket(t *testing.T) {
 	}
 }
 
-func TestStorageAllow(t *testing.T) {
-	storage := NewStorage(10, 5)
+func TestStorage_Allow(t *testing.T) {
+	storage := NewStorage(10.0, 5)
 	
 	clientID := "192.168.1.1"
 	
@@ -79,8 +79,8 @@ func TestStorageAllow(t *testing.T) {
 	}
 }
 
-func TestStorageMultipleClients(t *testing.T) {
-	storage := NewStorage(10, 5)
+func TestStorage_MultipleClients(t *testing.T) {
+	storage := NewStorage(10.0, 5)
 	
 	client1 := "192.168.1.1"
 	client2 := "192.168.1.2"

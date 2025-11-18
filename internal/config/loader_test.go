@@ -20,12 +20,12 @@ func TestLoad(t *testing.T) {
 		t.Errorf("Expected port 8080, got %d", config.Server.Port)
 	}
 
-	// Verify rate limit config
-	if config.RateLimit.RequestsPerSecond != 5 {
-		t.Errorf("Expected requests_per_second 5, got %d", config.RateLimit.RequestsPerSecond)
+	// Verify rate limit config (now uses requests_per_minute)
+	if config.RateLimit.RequestsPerMinute != 6 {
+		t.Errorf("Expected requests_per_minute 6, got %d", config.RateLimit.RequestsPerMinute)
 	}
-	if config.RateLimit.Burst != 10 {
-		t.Errorf("Expected burst 10, got %d", config.RateLimit.Burst)
+	if config.RateLimit.Burst != 3 {
+		t.Errorf("Expected burst 3, got %d", config.RateLimit.Burst)
 	}
 
 	// Verify routes
@@ -37,21 +37,25 @@ func TestLoad(t *testing.T) {
 	if config.Routes[0].Path != "/api" {
 		t.Errorf("Expected path '/api', got '%s'", config.Routes[0].Path)
 	}
-	if config.Routes[0].Target != "https://backend.com" {
-		t.Errorf("Expected target 'https://backend.com', got '%s'", config.Routes[0].Target)
+	if config.Routes[0].Target != "http://localhost:8000" {
+		t.Errorf("Expected target 'http://localhost:8000', got '%s'", config.Routes[0].Target)
 	}
 
 	// Check second route
 	if config.Routes[1].Path != "/auth" {
 		t.Errorf("Expected path '/auth', got '%s'", config.Routes[1].Path)
 	}
-	if config.Routes[1].Target != "https://auth.service.com" {
-		t.Errorf("Expected target 'https://auth.service.com', got '%s'", config.Routes[1].Target)
+	if config.Routes[1].Target != "http://localhost:9000" {
+		t.Errorf("Expected target 'http://localhost:9000', got '%s'", config.Routes[1].Target)
 	}
 
 	t.Logf("✓ Config loaded successfully:")
 	t.Logf("  Server Port: %d", config.Server.Port)
-	t.Logf("  Rate Limit: %d req/sec, burst: %d", config.RateLimit.RequestsPerSecond, config.RateLimit.Burst)
+	if config.RateLimit.RequestsPerSecond > 0 {
+		t.Logf("  Rate Limit: %d req/sec, burst: %d", config.RateLimit.RequestsPerSecond, config.RateLimit.Burst)
+	} else {
+		t.Logf("  Rate Limit: %d req/min, burst: %d", config.RateLimit.RequestsPerMinute, config.RateLimit.Burst)
+	}
 	for i, route := range config.Routes {
 		t.Logf("  Route %d: %s -> %s", i+1, route.Path, route.Target)
 	}

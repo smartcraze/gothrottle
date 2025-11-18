@@ -6,7 +6,7 @@ import (
 )
 
 func TestNewTokenBucket(t *testing.T) {
-	tb := NewTokenBucket(10, 50)
+	tb := NewTokenBucket(10.0, 50)
 	
 	if tb.maxTokens != 50 {
 		t.Errorf("Expected maxTokens 50, got %f", tb.maxTokens)
@@ -21,8 +21,8 @@ func TestNewTokenBucket(t *testing.T) {
 	}
 }
 
-func TestTokenBucketAllow(t *testing.T) {
-	tb := NewTokenBucket(10, 5)
+func TestTokenBucket_Allow(t *testing.T) {
+	tb := NewTokenBucket(10.0, 5)
 	
 	// Should allow first 5 requests (burst capacity)
 	for i := 0; i < 5; i++ {
@@ -37,8 +37,8 @@ func TestTokenBucketAllow(t *testing.T) {
 	}
 }
 
-func TestTokenBucketRefill(t *testing.T) {
-	tb := NewTokenBucket(10, 5)
+func TestTokenBucket_Refill(t *testing.T) {
+	tb := NewTokenBucket(10.0, 5)
 	
 	// Exhaust all tokens
 	for i := 0; i < 5; i++ {

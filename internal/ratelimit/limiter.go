@@ -18,11 +18,11 @@ type TokenBucket struct {
 	lastRefillTime time.Time
 }
 
-func NewTokenBucket(requestsPerSecond int, burst int) *TokenBucket {
+func NewTokenBucket(requestsPerSecond float64, burst int) *TokenBucket {
 	return &TokenBucket{
 		tokens:         float64(burst),
 		maxTokens:      float64(burst),
-		refillRate:     float64(requestsPerSecond),
+		refillRate:     requestsPerSecond,
 		lastRefillTime: time.Now(),
 	}
 }

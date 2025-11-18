@@ -17,9 +17,16 @@ func main() {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
+	requestsPerSec := cfg.RateLimit.GetRequestsPerSecond()
+
 	log.Printf("Loaded configuration:")
 	log.Printf("  Server port: %d", cfg.Server.Port)
-	log.Printf("  Rate limit: %d req/sec, burst: %d", cfg.RateLimit.RequestsPerSecond, cfg.RateLimit.Burst)
+	if cfg.RateLimit.RequestsPerSecond > 0 {
+		log.Printf("  Rate limit: %d req/sec, burst: %d", cfg.RateLimit.RequestsPerSecond, cfg.RateLimit.Burst)
+	} else {
+		log.Printf("  Rate limit: %d req/min (%.2f req/sec), burst: %d", 
+			cfg.RateLimit.RequestsPerMinute, requestsPerSec, cfg.RateLimit.Burst)
+	}
 	for i, route := range cfg.Routes {
 		log.Printf("  Route %d: %s -> %s", i+1, route.Path, route.Target)
 	}
@@ -28,7 +35,7 @@ func main() {
 	r.Use(gin.Recovery())
 	r.Use(middleware.Logger())
 
-	rateLimiter := middleware.NewRateLimiter(cfg.RateLimit.RequestsPerSecond, cfg.RateLimit.Burst)
+	rateLimiter := middleware.NewRateLimiter(requestsPerSec, cfg.RateLimit.Burst)
 	r.Use(rateLimiter.Limit())
 
 	r.GET("/ping", func(c *gin.Context) {

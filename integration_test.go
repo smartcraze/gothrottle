@@ -43,7 +43,7 @@ func TestEndToEndRateLimitingAndProxy(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
 
-	rateLimiter := middleware.NewRateLimiter(rateLimit.RequestsPerSecond, rateLimit.Burst)
+	rateLimiter := middleware.NewRateLimiter(float64(rateLimit.RequestsPerSecond), rateLimit.Burst)
 	router.Use(rateLimiter.Limit())
 
 	proxyHandler, err := proxy.NewHandler(routes)
@@ -168,7 +168,7 @@ func TestProxyRoutingWithRateLimit(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
 
-	rateLimiter := middleware.NewRateLimiter(100, 50)
+	rateLimiter := middleware.NewRateLimiter(100.0, 50)
 	router.Use(rateLimiter.Limit())
 
 	proxyHandler, err := proxy.NewHandler(routes)

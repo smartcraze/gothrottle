@@ -11,11 +11,11 @@ access to per-client rate limiters. Each client is identified by their IP addres
 type Storage struct {
 	mu             sync.RWMutex
 	buckets        map[string]*TokenBucket
-	requestsPerSec int
+	requestsPerSec float64
 	burst          int
 }
 
-func NewStorage(requestsPerSecond, burst int) *Storage {
+func NewStorage(requestsPerSecond float64, burst int) *Storage {
 	return &Storage{
 		buckets:        make(map[string]*TokenBucket),
 		requestsPerSec: requestsPerSecond,

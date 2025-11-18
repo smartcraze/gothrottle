@@ -11,7 +11,7 @@ type RateLimiter struct {
 	storage *ratelimit.Storage
 }
 
-func NewRateLimiter(requestsPerSecond, burst int) *RateLimiter {
+func NewRateLimiter(requestsPerSecond float64, burst int) *RateLimiter {
 	return &RateLimiter{
 		storage: ratelimit.NewStorage(requestsPerSecond, burst),
 	}

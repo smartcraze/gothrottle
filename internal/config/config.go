@@ -11,12 +11,27 @@ type Route struct {
 
 /*
 RateLimit configures the token bucket rate limiting parameters.
-RequestsPerSecond determines how fast tokens refill, while Burst
-defines the maximum tokens available for handling traffic spikes.
+Supports either requests_per_second OR requests_per_minute (not both).
+Burst defines the maximum tokens available for handling traffic spikes.
 */
 type RateLimit struct {
 	RequestsPerSecond int `yaml:"requests_per_second"`
+	RequestsPerMinute int `yaml:"requests_per_minute"`
 	Burst             int `yaml:"burst"`
+}
+
+/*
+GetRequestsPerSecond converts the rate limit to requests per second.
+If requests_per_minute is specified, it converts to seconds.
+*/
+func (r *RateLimit) GetRequestsPerSecond() float64 {
+	if r.RequestsPerSecond > 0 {
+		return float64(r.RequestsPerSecond)
+	}
+	if r.RequestsPerMinute > 0 {
+		return float64(r.RequestsPerMinute) / 60.0
+	}
+	return 1.0
 }
 
 type ServerConfig struct {

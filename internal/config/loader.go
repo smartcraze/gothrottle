@@ -44,8 +44,12 @@ func validate(config *Config) error {
 		}
 	}
 
-	if config.RateLimit.RequestsPerSecond <= 0 {
-		return fmt.Errorf("requests_per_second must be greater than 0")
+	if config.RateLimit.RequestsPerSecond <= 0 && config.RateLimit.RequestsPerMinute <= 0 {
+		return fmt.Errorf("either requests_per_second or requests_per_minute must be greater than 0")
+	}
+
+	if config.RateLimit.RequestsPerSecond > 0 && config.RateLimit.RequestsPerMinute > 0 {
+		return fmt.Errorf("cannot specify both requests_per_second and requests_per_minute, choose one")
 	}
 
 	if config.RateLimit.Burst <= 0 {

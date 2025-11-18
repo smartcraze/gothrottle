@@ -9,7 +9,7 @@ import (
 )
 
 func TestNewRateLimiter(t *testing.T) {
-	rl := NewRateLimiter(10, 50)
+	rl := NewRateLimiter(10.0, 50)
 	
 	if rl.storage == nil {
 		t.Error("Expected storage to be initialized")
