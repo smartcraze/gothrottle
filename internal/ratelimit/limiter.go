@@ -36,15 +36,7 @@ func (tb *TokenBucket) Allow() bool {
 	tb.mu.Lock()
 	defer tb.mu.Unlock()
 
-	now := time.Now()
-	elapsed := now.Sub(tb.lastRefillTime).Seconds()
-	tb.tokens += elapsed * tb.refillRate
-
-	if tb.tokens > tb.maxTokens {
-		tb.tokens = tb.maxTokens
-	}
-
-	tb.lastRefillTime = now
+	tb.refill()
 
 	if tb.tokens >= 1.0 {
 		tb.tokens -= 1.0
@@ -54,19 +46,24 @@ func (tb *TokenBucket) Allow() bool {
 	return false
 }
 
+func (tb *TokenBucket) refill() {
+	now := time.Now()
+	elapsed := now.Sub(tb.lastRefillTime).Seconds()
+	
+	if elapsed > 0 {
+		tb.tokens += elapsed * tb.refillRate
+		if tb.tokens > tb.maxTokens {
+			tb.tokens = tb.maxTokens
+		}
+		tb.lastRefillTime = now
+	}
+}
+
 func (tb *TokenBucket) Tokens() float64 {
 	tb.mu.Lock()
 	defer tb.mu.Unlock()
 
-	now := time.Now()
-	elapsed := now.Sub(tb.lastRefillTime).Seconds()
-	tb.tokens += elapsed * tb.refillRate
-
-	if tb.tokens > tb.maxTokens {
-		tb.tokens = tb.maxTokens
-	}
-
-	tb.lastRefillTime = now
+	tb.refill()
 	return tb.tokens
 }
 
